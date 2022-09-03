@@ -1,16 +1,16 @@
 from selenium import webdriver
-import time
-import urllib.request
-import os
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
+import urllib.request
+import time
+import os
 
 # TODO
 print("Bing search not implemented!")
 
 search_engine = int(input("[1] Google\n[2] DuckDuckGo\n[3] Bing\n>: "))
-queryForSearch = input("search query: ")
+query = input("Search query: ")
 limit = int(input("Enter the required no of pics: "))
 
 browser = webdriver.Firefox()
@@ -23,7 +23,7 @@ if search_engine == 1:
     image_link.click()
 
     search = browser.find_element(by=By.NAME, value='q')
-    search.send_keys(queryForSearch, Keys.ENTER)
+    search.send_keys(query, Keys.ENTER)
 
 else:
     browser.get('https://duckduckgo.com/?q=')
@@ -32,7 +32,7 @@ else:
     search.get_attribute('href')
     search.click()
 
-    search.send_keys(queryForSearch, Keys.ENTER)
+    search.send_keys(query, Keys.ENTER)
     browser.implicitly_wait(2)
 
     image_link = browser.find_element(by=By.PARTIAL_LINK_TEXT, value="Images")
@@ -56,7 +56,7 @@ current = 0
 counter = 0
 
 try:
-    os.mkdir(queryForSearch)
+    os.mkdir(query)
 except Exception as p:
     print(p, "\nOverwriting")
 
@@ -70,7 +70,7 @@ for i in image_:
         src = str(src)
         print("Downloaded image: ", count)
         try:
-            urllib.request.urlretrieve(src, os.path.join(f'{queryForSearch}', 'image' + str(count) + '.jpg'))
+            urllib.request.urlretrieve(src, os.path.join(f'{query}', 'image' + str(count) + '.jpg'))
         except Exception:
             count -= 1
             print(f'Could not print image: {count}\n')
