@@ -78,6 +78,6 @@ for i in image_:
         count -= 1
         print(f'Could not print image: {count}\n')
 
-print("Total images downloaded : ", (count - 1))
+print("Total images downloaded: ", (count - 1))
 
 browser.close()
