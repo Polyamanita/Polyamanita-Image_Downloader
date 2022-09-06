@@ -11,7 +11,7 @@ print("Bing search not implemented!")
 
 search_engine = int(input("[1] Google\n[2] DuckDuckGo\n[3] Bing\n>: "))
 query = input("Search query: ")
-limit = int(input("Enter the required no of pics: "))
+limit = int(input("Enter the required no. of pics: "))
 
 browser = webdriver.Firefox()
 
