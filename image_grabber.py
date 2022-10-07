@@ -15,6 +15,8 @@ import os
 # TODO
 print("Bing search not implemented!")
 
+csv_file = 'florida_mushi.csv'
+
 search_engine_max = 2  # google, duckduckgo, bing
 
 smallest_csv_count = 25  # smallest amount of instances, last column in the csv file
@@ -37,7 +39,7 @@ local_total_time_array = list()
 
 total_count = 0
 
-with open('florida_mushi.csv') as csv_file:
+with open(csv_file) as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
 
