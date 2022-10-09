@@ -2,3 +2,4 @@ error.log
 geckodriver.log
 venv/
 images/
+tmp/
