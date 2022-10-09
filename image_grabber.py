@@ -8,18 +8,28 @@ import time
 import csv
 import os
 
-# TODO
-print("Bing search not implemented!")
-
+# file name to read from
 csv_file_name = 'florida_mushi.csv'
 
-google = False
-duckduckgo = True
+# NOT implemented search engines
+bing = False
+yahoo = False
+yandex = False
 
-smallest_csv_count = 250  # smallest amount of instances, last column in the csv file; i.e. 25
+# implemented search engines
+google = True
+duckduckgo = False
 
-limit = 5  # number of images you may download; i.e. 125
-smallest_allowed = 5  # smallest amount of images you're allowed to download w/o being useless; i.e. 50
+# special case, last column in the csv file; i.e. 25
+# in the provided CSV file, this is the amount of occurrences
+# if some data has a value SMALLER than this, it will be skipped
+special_case = 250
+
+# number of images you may download; i.e. 125
+limit = 5
+
+# smallest amount of images you're allowed to download w/o being useless; i.e. 50
+smallest_allowed = 0
 
 try:
     os.mkdir("images")
@@ -57,7 +67,7 @@ if google:
             if line_count == 0:
                 line_count += 1
                 continue
-            elif int(row[3]) < smallest_csv_count:
+            elif int(row[3]) < special_case:
                 continue
             else:
                 query = row[1] + ' ' + row[2]
@@ -109,8 +119,8 @@ if google:
                         src = str(src)
                         print("Downloaded image: ", count)
                         try:
-                            urllib.request.urlretrieve(src,
-                                                       os.path.join(f'{query_path}', 'image' + str(count) + '.jpg'))
+                            file_name = query + "_" + search_engine_name + "_" + str(count)
+                            urllib.request.urlretrieve(src, os.path.join(f'{query_path}', file_name + '.jpg'))
                         except Exception as p:
                             count -= 1
                             print(p, f'Could not print image: {count}\n')
@@ -161,7 +171,7 @@ if duckduckgo:
             if line_count == 0:
                 line_count += 1
                 continue
-            elif int(row[3]) < smallest_csv_count:
+            elif int(row[3]) < special_case:
                 continue
             else:
                 query = row[1] + ' ' + row[2]
@@ -179,9 +189,13 @@ if duckduckgo:
                 print(f"\nUsing search engine: {search_engine_name}")
 
                 query_pedantic = '\"' + query + '\"'
-                search = browser.find_element(by=By.ID, value="search_form_input")
-                # TODO, this does not work on duckduckgo?
-                # search.clear()
+
+                search = browser.find_element(by=By.NAME, value="q")
+                # browser.execute_script("arguments[0].scrollIntoView(true);", search
+                browser.execute_script(
+                    "scrollBy(" + str(limit * 10000 * -1) + "," + str(str(limit * 10000 * -1)) + ");")
+                browser.implicitly_wait(.5)
+                search.clear()
                 search.send_keys(query_pedantic, Keys.ENTER)
 
                 value = 0
@@ -218,8 +232,8 @@ if duckduckgo:
                         src = str(src)
                         print("Downloaded image: ", count)
                         try:
-                            urllib.request.urlretrieve(src,
-                                                       os.path.join(f'{query_path}', 'image' + str(count) + '.jpg'))
+                            file_name = query.replace(" ", "_") + "_" + search_engine_name + "_" + str(count)
+                            urllib.request.urlretrieve(src, os.path.join(f'{query_path}', file_name + '.jpg'))
                         except Exception as p:
                             count -= 1
                             print(p, f'Could not print image: {count}\n')
@@ -249,12 +263,15 @@ if duckduckgo:
 
     csv_file.close()
 
-avg_time = sum(local_total_time_array) / len(local_total_time_array)
-global_time = time.time() - global_start_time
-
-print(f"Total images downloaded: {total_count}")
-print(f"Average search time execution: {round(avg_time,2)}")
-print(f"Global time execution: {round(global_time, 2)}")
+avg_time = -1
+if len(local_total_time_array):
+    avg_time = sum(local_total_time_array) / len(local_total_time_array)
+    global_time = time.time() - global_start_time
+    print(f"Total images downloaded: {total_count}")
+    print(f"Average search time execution: {round(avg_time, 2)}")
+    print(f"Global time execution: {round(global_time, 2)}")
+else:
+    print('No search engine selected!')
 
 error_log.close()
 browser.close()
