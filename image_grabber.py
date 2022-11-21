@@ -8,6 +8,8 @@ import time
 import csv
 import os
 
+import cv2
+
 # file name to read from
 csv_file_name = 'florida_mushi.csv'
 
@@ -115,16 +117,27 @@ if google:
                         src = i.get_attribute('src')
                     except Exception as p:
                         print(p)
+                        count += 1
                         continue
                     count += 1
                     if count > limit:
                         break
                     if src:
                         src = str(src)
-                        print("Downloaded image: ", count)
                         try:
-                            file_name = query + "_" + search_engine_name + "_" + str(count)
-                            urllib.request.urlretrieve(src, os.path.join(f'{query_path}', file_name + '.jpg'))
+                            file_name = query.replace(" ", "_") + "_" + search_engine_name + "_" + str(count)
+                            file_name = os.path.join(f'{query_path}', file_name + '.jpg')
+                            urllib.request.urlretrieve(src, file_name)
+
+                            image_current_shape = cv2.imread(file_name).shape
+                            w, h, d = image_current_shape
+                            if w <= 16 or h <= 16:
+                                os.remove(file_name)
+                                count -= 1
+                                continue
+
+                            print("Downloaded image: ", count)
+
                         except Exception as p:
                             count -= 1
                             print(p, f'Could not print image: {count}\n')
@@ -228,7 +241,12 @@ if duckduckgo:
 
                 count = 0
                 for i in image_:
-                    src = i.get_attribute('src')
+                    try:
+                        src = i.get_attribute('src')
+                    except Exception as p:
+                        print(p)
+                        count += 1
+                        continue
                     count += 1
                     if count > limit:
                         break
