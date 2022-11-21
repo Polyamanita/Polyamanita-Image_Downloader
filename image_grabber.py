@@ -23,13 +23,13 @@ duckduckgo = False
 # special case, last column in the csv file; i.e. 25
 # in the provided CSV file, this is the amount of occurrences
 # if some data has a value SMALLER than this, it will be skipped
-special_case = 250
+special_case = 25
 
 # number of images you may download; i.e. 125
-limit = 5
+limit = 125
 
 # smallest amount of images you're allowed to download w/o being useless; i.e. 50
-smallest_allowed = 0
+smallest_allowed = 50
 
 try:
     os.mkdir("images")
@@ -111,7 +111,11 @@ if google:
 
                 count = 0
                 for i in image_:
-                    src = i.get_attribute('src')
+                    try:
+                        src = i.get_attribute('src')
+                    except Exception as p:
+                        print(p)
+                        continue
                     count += 1
                     if count > limit:
                         break
